@@ -11,10 +11,10 @@ export default function (app: Express) {
     definition: {
       openapi: "3.0.0",
       info: {
-        title: "E4K API Documentation",
+        title: "E4K Player side API Documentation",
         version: "1.0.0",
         description:
-          "API Documentation of English For Kids project of Q.Tu and C.Hieu",
+          "API Documentation of English For Kids project of Q.Tu and C.Hieu (Player side)",
       },
       servers: [
         {

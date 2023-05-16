@@ -7,16 +7,16 @@ const router = express.Router();
 /**
  *@swagger
  * tags:
- *      name: course/player
+ *      name: course
  *      description: Contains all API for course (PLAYER side)
  */
 
 /**
  * @swagger
- * /course/player:
+ * /course:
  *   get:
  *     summary: Get all course (without lession)
- *     tags: [course/player]
+ *     tags: [course]
  *     description: Call this API (must provide accessToken)
  *     responses:
  *       200:
@@ -59,17 +59,6 @@ const router = express.Router();
  *       500:
  *         description: Missing phone or username | Phone was used by another player
  */
-router.get("/player", checkAuth, CourseController.getAllCourseForPlayer);
-
-router.get(
-  "/search",
-  checkAuth,
-  CourseController.searchCourseByKeywordForAdmin
-);
-router.get("/", checkAuth, CourseController.getCourseByTypeForAdmin);
-router.get("/:id", checkAuth, CourseController.getCourseByCourseId);
-router.post("/", checkAuth, CourseController.createDraftCourse);
-router.put("/", checkAuth, CourseController.editCourseForAdmin);
-router.delete("/:id", checkAuth, CourseController.deleteCourseByCourseId);
+router.get("/", checkAuth, CourseController.getAllCourse);
 
 export default router;

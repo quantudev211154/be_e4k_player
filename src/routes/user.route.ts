@@ -4,23 +4,19 @@ import { checkAuth } from "../middlewares/auth.middleware";
 
 const router = express.Router();
 
-router.get("/admin/:phone", checkAuth, UserController.findPlayerByPhone);
-router.post("/admin/", checkAuth, UserController.register);
-router.put("/admin", checkAuth, UserController.updateUserInfo);
-
 /**
  *@swagger
  * tags:
- *      name: user/player
+ *      name: user
  *      description: Contains all PUBLIC routes that player side (android version) can use
  */
 
 /**
  * @swagger
- * /user/player:
+ * /user:
  *   put:
  *     summary: Update username for player (must provide accessToken)
- *     tags: [user/player]
+ *     tags: [user]
  *     description: Call this API to update username
  *     requestBody:
  *       required: true
@@ -75,14 +71,14 @@ router.put("/admin", checkAuth, UserController.updateUserInfo);
  *       500:
  *         description: Missing username or userId | Phone was used by another player
  */
-router.put("/player", checkAuth, UserController.updateUsernameForPlayer);
+router.put("/", checkAuth, UserController.updateUsername);
 
 /**
  * @swagger
- * /user/player:
+ * /user:
  *   get:
  *     summary: Get info of player (must provide token)
- *     tags: [user/player]
+ *     tags: [user]
  *     description: Call this API to get user info
  *     responses:
  *       200:
@@ -126,14 +122,14 @@ router.put("/player", checkAuth, UserController.updateUsernameForPlayer);
  *       500:
  *         description: Missing userId or not found user | Phone was used by another player
  */
-router.get("/player", checkAuth, UserController.getUserInfo);
+router.get("/", checkAuth, UserController.getUserInfo);
 
 /**
  * @swagger
- * /user/player/hearts:
+ * /user/hearts:
  *   post:
  *     summary: Buy heart for player
- *     tags: [user/player]
+ *     tags: [user]
  *     description: Call this API to buy heart => player info after buy hearts
  *     requestBody:
  *       required: true
@@ -188,14 +184,14 @@ router.get("/player", checkAuth, UserController.getUserInfo);
  *       500:
  *         description: Missing userId or hearts | Not found user | No enough golds to buy hearts | Current player hearts hit maximum hearts (5) | Phone was used by another player
  */
-router.post("/player/hearts", checkAuth, UserController.buyHearts);
+router.post("/hearts", checkAuth, UserController.buyHearts);
 
 /**
  * @swagger
- * /user/player/updateGolds:
+ * /user/updateGolds:
  *   post:
  *     summary: Update golds for player
- *     tags: [user/player]
+ *     tags: [user]
  *     description: Player receive login gift => Call this API to update player golds
  *     requestBody:
  *       required: true
@@ -250,14 +246,14 @@ router.post("/player/hearts", checkAuth, UserController.buyHearts);
  *       500:
  *         description: Missing userId or golds | Not found user
  */
-router.post("/player/updateGolds", checkAuth, UserController.updateGolds);
+router.post("/updateGolds", checkAuth, UserController.updateGolds);
 
 /**
  * @swagger
- * /user/player/scoreBoard:
+ * /user/scoreBoard:
  *   get:
  *     summary: Get scoreboard from all players score
- *     tags: [user/player]
+ *     tags: [user]
  *     description: Call this API to get player scoreboard
  *     responses:
  *       200:
@@ -298,14 +294,14 @@ router.post("/player/updateGolds", checkAuth, UserController.updateGolds);
  *       500:
  *         description: Missing userId or not found user | Phone was used by another player
  */
-router.get("/player/scoreBoard", checkAuth, UserController.getScoreboard);
+router.get("/scoreBoard", checkAuth, UserController.getScoreboard);
 
 /**
  * @swagger
- * /user/player/change-password:
+ * /user/change-password:
  *   put:
  *     summary: Change password for player (must provide token)
- *     tags: [user/player]
+ *     tags: [user]
  *     description: Call this API to help user change password
  *     requestBody:
  *       required: true
@@ -361,18 +357,14 @@ router.get("/player/scoreBoard", checkAuth, UserController.getScoreboard);
  *       500:
  *         description: Missing userId or not found user | Phone was used by another player
  */
-router.put(
-  "/player/change-password",
-  checkAuth,
-  UserController.changePasswordForPlayer
-);
+router.put("/change-password", checkAuth, UserController.changePassword);
 
 /**
  * @swagger
- * /user/player/forget-password:
+ * /user/forget-password:
  *   put:
  *     summary: Recover password for player (no need token)
- *     tags: [user/player]
+ *     tags: [user]
  *     description: Call this API to help user recover password
  *     requestBody:
  *       required: true
@@ -428,14 +420,14 @@ router.put(
  *       500:
  *         description: Missing userId or not found user | Phone was used by another player
  */
-router.put("/player/forget-password", UserController.recoverPasswordForPlayer);
+router.put("/forget-password", UserController.recoverPassword);
 
 /**
  * @swagger
- * /user/player/login-rewards:
+ * /user/login-rewards:
  *   put:
  *     summary: Update login rewards for play (must provide token)
- *     tags: [user/player]
+ *     tags: [user]
  *     description: Call this API to help user receives login rewards
  *     requestBody:
  *       required: true
@@ -493,18 +485,14 @@ router.put("/player/forget-password", UserController.recoverPasswordForPlayer);
  *       500:
  *         description: Missing userId, golds or not found user | Phone was used by another player
  */
-router.put(
-  "/player/login-rewards",
-  checkAuth,
-  UserController.updateLoginRewardForPlayer
-);
+router.put("/login-rewards", checkAuth, UserController.updateLoginReward);
 
 /**
  * @swagger
- * /user/player/update-hearts:
+ * /user/update-hearts:
  *   put:
  *     summary: Update heart for user (must provide token)
- *     tags: [user/player]
+ *     tags: [user]
  *     description: Call this API to update hearts of user
  *     requestBody:
  *       required: true
@@ -562,10 +550,6 @@ router.put(
  *       500:
  *         description: Missing userId, hearts or not found user | Phone was used by another player
  */
-router.put(
-  "/player/update-hearts",
-  checkAuth,
-  UserController.updateHeartsForPlayer
-);
+router.put("/update-hearts", checkAuth, UserController.updateHearts);
 
 export default router;

@@ -7,16 +7,16 @@ const router = express.Router();
 /**
  *@swagger
  * tags:
- *      name: diary/player
+ *      name: diary
  *      description: Contains all API for diary (PLAYER side)
  */
 
 /**
  * @swagger
- * /diary/player:
+ * /diary:
  *   post:
  *     summary: Update diary for player after played one round (must provide token)
- *     tags: [diary/player]
+ *     tags: [diary]
  *     description: Player plays one round successfully => Call this API
  *     requestBody:
  *       required: true
@@ -121,6 +121,6 @@ const router = express.Router();
  *       500:
  *         description: Missing phone | login for invalid purpose (such as phone was registered as Admin right, but login as player)
  */
-router.post("/player", checkAuth, DiaryController.updateDiaryForPlayer);
+router.post("/", checkAuth, DiaryController.updateDiary);
 
 export default router;

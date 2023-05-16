@@ -11,37 +11,6 @@ import {
 } from "../constants/user.constant";
 import { hash, verify } from "argon2";
 
-export async function register(req: Request, res: Response) {
-  try {
-    const { phone, username } = req.body;
-
-    if (!phone || !username)
-      return HelperUtil.returnErrorResult(res, APIMessage.ERR_MISSING_PARAMS);
-
-    const existUser = await UserSchema.findOne({
-      phone,
-    });
-
-    if (existUser)
-      return HelperUtil.returnErrorResult(res, APIMessage.ERR_EXISTED_USER);
-
-    const newUser = await new UserSchema({
-      phone,
-      username,
-    }).save();
-
-    newUser.password = undefined;
-
-    return HelperUtil.returnSuccessfulResult(
-      res,
-      { newUser },
-      APIMessage.SUC_NEW_USER_CREATED
-    );
-  } catch (error: any) {
-    return HelperUtil.returnErrorResult(res, error);
-  }
-}
-
 export async function findPlayerByPhone(req: Request, res: Response) {
   try {
     const phone = req.params.phone as string;
@@ -107,7 +76,7 @@ export async function updateUserInfo(req: Request, res: Response) {
   }
 }
 
-export async function updateUsernameForPlayer(req: Request, res: Response) {
+export async function updateUsername(req: Request, res: Response) {
   try {
     const { username, userId } = req.body;
 
@@ -260,7 +229,7 @@ export async function getScoreboard(req: Request, res: Response) {
   }
 }
 
-export async function changePasswordForPlayer(req: Request, res: Response) {
+export async function changePassword(req: Request, res: Response) {
   try {
     const { userId, oldPassword, newPassword } = req.body;
 
@@ -299,7 +268,7 @@ export async function changePasswordForPlayer(req: Request, res: Response) {
   }
 }
 
-export async function recoverPasswordForPlayer(req: Request, res: Response) {
+export async function recoverPassword(req: Request, res: Response) {
   try {
     const { phone, newPassword } = req.body;
 
@@ -325,7 +294,7 @@ export async function recoverPasswordForPlayer(req: Request, res: Response) {
   }
 }
 
-export async function updateLoginRewardForPlayer(req: Request, res: Response) {
+export async function updateLoginReward(req: Request, res: Response) {
   try {
     const { userId, golds } = req.body;
 
@@ -359,7 +328,7 @@ export async function updateLoginRewardForPlayer(req: Request, res: Response) {
   }
 }
 
-export async function updateHeartsForPlayer(req: Request, res: Response) {
+export async function updateHearts(req: Request, res: Response) {
   try {
     const { userId, hearts } = req.body;
 

@@ -3,28 +3,19 @@ import { AuthController } from "../controllers";
 import { checkAuth } from "../middlewares/auth.middleware";
 
 const router = express.Router();
-
-/**
- * For admin side
- */
-router.get("/admin/checkSSO", AuthController.checkSSOForAdmin);
-router.post("/admin/login", AuthController.loginForAdmin);
-router.post("/admin/register", checkAuth, AuthController.registerForAdmin);
-router.post("/admin/logout", AuthController.logoutForAdmin);
-
 /**
  *@swagger
  * tags:
- *      name: auth/player
+ *      name: auth
  *      description: Contains all authentication route for PLAYER (login, register, logout)
  */
 
 /**
  * @swagger
- * /auth/player/login:
+ * /auth/login:
  *   post:
  *     summary: Login for player
- *     tags: [auth/player]
+ *     tags: [auth]
  *     description: Player enters phone => check is player exist? => if exist, let's call this API
  *     requestBody:
  *       required: true
@@ -89,14 +80,14 @@ router.post("/admin/logout", AuthController.logoutForAdmin);
  *       500:
  *         description: Missing phone | login for invalid purpose (such as phone was registered as Admin right, but login as player)
  */
-router.post("/player/login", AuthController.loginForPlayer);
+router.post("/login", AuthController.login);
 
 /**
  * @swagger
- * /auth/player/register:
+ * /auth/register:
  *   post:
  *     summary: Register for player
- *     tags: [auth/player]
+ *     tags: [auth]
  *     description: Call this API to register new user -> After OTP authenticated
  *     requestBody:
  *       required: true
@@ -164,14 +155,14 @@ router.post("/player/login", AuthController.loginForPlayer);
  *       500:
  *         description: Missing phone | login for invalid purpose (such as phone was registered as Admin right, but login as player)
  */
-router.post("/player/register", AuthController.registerForPlayer);
+router.post("/register", AuthController.register);
 
 /**
  * @swagger
- * /auth/player/logout:
+ * /auth/logout:
  *   post:
  *     summary: Logout user
- *     tags: [auth/player]
+ *     tags: [auth]
  *     description: Create token to upper one and reject all token request with token.tokenVersion != player.tokenVersion
  *     requestBody:
  *       required: true
@@ -205,14 +196,14 @@ router.post("/player/register", AuthController.registerForPlayer);
  *       500:
  *         description: Missing phone or username | Phone was used by another player
  */
-router.post("/player/logout", AuthController.logoutForPlayer);
+router.post("/logout", AuthController.logout);
 
 /**
  * @swagger
- * /auth/player/checkSSO:
+ * /auth/checkSSO:
  *   post:
  *     summary: Player no need to login in the next open app time (SSO =  Single sign on)
- *     tags: [auth/player]
+ *     tags: [auth]
  *     description: Create POST request with refresh token in body to this API first => server check info from refreshToken => return checkSSO status
  *     requestBody:
  *       required: true
@@ -273,6 +264,6 @@ router.post("/player/logout", AuthController.logoutForPlayer);
  *       500:
  *         description: Missing phone or username | Phone was used by another player
  */
-router.post("/player/checkSSO", AuthController.checkSSOForPlayer);
+router.post("/checkSSO", AuthController.checkSSO);
 
 export default router;

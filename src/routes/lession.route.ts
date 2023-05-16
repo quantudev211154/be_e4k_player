@@ -7,16 +7,16 @@ const router = express.Router();
 /**
  *@swagger
  * tags:
- *      name: lession/player
+ *      name: lession
  *      description: Contains all API for lession (PLAYER side)
  */
 
 /**
  * @swagger
- * /lession/player/{courseId}:
+ * /lession/{courseId}:
  *   get:
  *     summary: Get all lessions by courseId
- *     tags: [lession/player]
+ *     tags: [lession]
  *     description: Player enters phone => check is player exist? => if exist, let's call this API
  *     parameters:
  *        - in: path
@@ -68,17 +68,6 @@ const router = express.Router();
  *       500:
  *         description: Missing phone | login for invalid purpose (such as phone was registered as Admin right, but login as player)
  */
-router.get(
-  "/player/:courseId",
-  checkAuth,
-  LessionController.getAllLessionByCourseIdForPlayer
-);
-
-router.get(
-  "/:courseId/:lessionId",
-  checkAuth,
-  LessionController.getLessionById
-);
-router.post("/", checkAuth, LessionController.createNewLession);
+router.get("/:courseId", checkAuth, LessionController.getAllLessionByCourseId);
 
 export default router;

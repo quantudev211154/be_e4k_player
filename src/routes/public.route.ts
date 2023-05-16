@@ -4,22 +4,18 @@ import { PublicController } from "../controllers";
 const router = express.Router();
 
 /**
- * For admin side
- */
-
-/**
  *@swagger
  * tags:
- *      name: public/player
+ *      name: public
  *      description: Contains all PUBLIC routes that player side (android version) can use
  */
 
 /**
  * @swagger
- * /public/player/search?phone={phone}:
+ * /public/search?phone={phone}:
  *   get:
  *     summary: Get some info of user
- *     tags: [public/player]
+ *     tags: [public]
  *     description: Get _id, phone, username of player but no need to login (no need token)
  *     parameters:
  *         - in: path
@@ -59,6 +55,6 @@ const router = express.Router();
  *       500:
  *         description: Missing phone or username | Phone was used by another player
  */
-router.get("/player/search", PublicController.searchUserByPhone);
+router.get("/search", PublicController.searchUserByPhone);
 
 export default router;

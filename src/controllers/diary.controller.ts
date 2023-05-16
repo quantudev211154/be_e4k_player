@@ -3,10 +3,7 @@ import { HelperUtil } from "../utils";
 import { APIMessage } from "../constants";
 import { CourseSchema, DiarySchema, UserSchema } from "../models";
 
-/**
- * FOR PLAYER
- */
-export async function updateDiaryForPlayer(req: Request, res: Response) {
+export async function updateDiary(req: Request, res: Response) {
   try {
     const { userId, courseId, lessionId, roundId, score, hearts } = req.body;
 
