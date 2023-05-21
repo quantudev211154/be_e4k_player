@@ -11,6 +11,12 @@ export enum ECLRStatus {
   DRAFT = "DRAFT",
 }
 
+export enum ECourseLevel {
+  EASY = "EASY",
+  MEDIUM = "MEDIUM",
+  HARD = "HARD",
+}
+
 const courseSchema = new Schema(
   {
     title: {
@@ -21,10 +27,16 @@ const courseSchema = new Schema(
       type: String,
       require: true,
     },
-    level: {
+    position: {
       type: Number,
       require: false,
       default: null,
+    },
+    level: {
+      type: String,
+      require: false,
+      enum: ECourseLevel,
+      default: ECourseLevel.EASY,
     },
     creator: {
       type: Schema.Types.ObjectId,
@@ -111,7 +123,8 @@ export interface ICourse {
   description?: string;
   creator: IUser;
   type: ECLRStatus;
-  level: number;
+  position: number;
+  level: ECourseLevel;
   lessions: ILession[];
   isDeleted?: boolean;
   deletedBy?: IUser;

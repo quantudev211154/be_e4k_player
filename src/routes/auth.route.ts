@@ -68,6 +68,9 @@ const router = express.Router();
  *                              role:
  *                                  type: string
  *                                  example: PLAYER
+ *                              level:
+ *                                  type: string
+ *                                  example: NEWBIE (NEWBIE | STARTER)
  *                              registerDate:
  *                                  type: Date
  *                                  example: 2023-04-30T17:41:18.167Z
@@ -107,6 +110,9 @@ router.post("/login", AuthController.login);
  *               username:
  *                  type: string
  *                  example: "Be Heo"
+ *               level:
+ *                  type: string
+ *                  example: NEWBIE (NEWBIE | STARTER)
  *     responses:
  *       200:
  *         description: Player info (without password), accessToken, refreshToken
@@ -138,7 +144,7 @@ router.post("/login", AuthController.login);
  *                                  type: integer
  *                                  example: 0
  *                              level:
- *                                  type: integer
+ *                                  type: string
  *                                  example: 0
  *                              role:
  *                                  type: string

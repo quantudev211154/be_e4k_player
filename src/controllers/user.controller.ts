@@ -363,3 +363,30 @@ export async function updateHearts(req: Request, res: Response) {
     return HelperUtil.returnErrorResult(res, error);
   }
 }
+
+export async function updateUserScoreAndGolds(req: Request, res: Response) {
+  try {
+    const { userId, score } = req.body;
+
+    if (!userId || !score)
+      return HelperUtil.returnErrorResult(res, APIMessage.ERR_MISSING_PARAMS);
+
+    const existUser = await UserSchema.findById(userId);
+
+    if (!existUser)
+      return HelperUtil.returnErrorResult(res, APIMessage.ERR_NO_USER_FOUND);
+
+    const updatedUser = await UserSchema.findByIdAndUpdate(userId, {
+      weeklyScore: existUser.weeklyScore
+        ? existUser.weeklyScore + parseInt(score)
+        : parseInt(score),
+      golds: existUser.golds
+        ? existUser.golds + Math.round(parseInt(score) / 2)
+        : existUser.golds,
+    });
+
+    return HelperUtil.returnSuccessfulResult(res, { updatedUser });
+  } catch (error) {
+    return HelperUtil.returnErrorResult(res, error);
+  }
+}

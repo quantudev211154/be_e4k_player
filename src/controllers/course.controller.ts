@@ -11,14 +11,16 @@ export async function getAllCourse(req: Request, res: Response) {
       type: ECLRStatus.PUBLISHED,
       isDeleted: false,
     };
-    const foundCourses = await CourseSchema.find(filter).select([
-      "-level",
-      "-creator",
-      "-isDeleted",
-      "-deletedBy",
-      "-updatedAt",
-      "-type",
-    ]);
+    const foundCourses = await CourseSchema.find(filter)
+      .select([
+        "-level",
+        "-creator",
+        "-isDeleted",
+        "-deletedBy",
+        "-updatedAt",
+        "-type",
+      ])
+      .sort({ position: -1 });
 
     courses = [...foundCourses];
 

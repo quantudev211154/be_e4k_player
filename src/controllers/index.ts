@@ -4,3 +4,4 @@ export * as CourseController from "./course.controller";
 export * as PublicController from "./public.controller";
 export * as LessionController from "./lession.controller";
 export * as DiaryController from "./diary.controller";
+export * as TestController from "./test.controller";

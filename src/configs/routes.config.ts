@@ -5,6 +5,7 @@ import {
   DiaryRouter,
   LessionRouter,
   PublicRouter,
+  TestRouter,
   UserRouter,
 } from "../routes";
 
@@ -15,6 +16,8 @@ export default function (app: Express) {
   app.use("/api/lession", LessionRouter);
   app.use("/api/diary", DiaryRouter);
   app.use("/api/user", UserRouter);
+  app.use("/api/test", TestRouter);
+
   app.use("/api", (req: Request, res: Response) => {
     return res.send(`<center><h1>Welcome to E4K Player back-end</h1></center>`);
   });

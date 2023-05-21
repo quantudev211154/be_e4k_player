@@ -54,9 +54,9 @@ export async function login(req: Request, res: Response) {
 
 export async function register(req: Request, res: Response) {
   try {
-    const { phone, username, password } = req.body;
+    const { phone, username, password, level } = req.body;
 
-    if (!phone || !username || !password)
+    if (!phone || !username || !password || !level)
       return HelperUtil.returnErrorResult(res, APIMessage.ERR_MISSING_PARAMS);
 
     const existPlayer = await UserSchema.findOne({ phone });
@@ -71,6 +71,7 @@ export async function register(req: Request, res: Response) {
       username,
       hearts: 5,
       golds: 500,
+      level,
       password: hashedPassword,
     }).save();
 
