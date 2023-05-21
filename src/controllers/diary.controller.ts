@@ -1,13 +1,28 @@
 import { Request, Response } from "express";
 import { HelperUtil } from "../utils";
 import { APIMessage } from "../constants";
-import { CourseSchema, DiarySchema, UserSchema } from "../models";
+import {
+  CourseSchema,
+  DiarySchema,
+  ERoundPlayStatus,
+  IDiaryLessionRound,
+  UserSchema,
+} from "../models";
 
 export async function updateDiary(req: Request, res: Response) {
   try {
-    const { userId, courseId, lessionId, roundId, score, hearts } = req.body;
+    const { userId, courseId, lessionId, roundId, score, hearts, playStatus } =
+      req.body;
 
-    if (!userId || !courseId || !lessionId || !roundId || !score || !hearts)
+    if (
+      !userId ||
+      !courseId ||
+      !lessionId ||
+      !roundId ||
+      score === undefined ||
+      !hearts ||
+      !playStatus
+    )
       return HelperUtil.returnErrorResult(res, APIMessage.ERR_MISSING_PARAMS);
 
     const existCourse = await CourseSchema.findById(courseId);
@@ -25,13 +40,21 @@ export async function updateDiary(req: Request, res: Response) {
     ])
       .then(async ([user, existCourseInDiary]) => {
         if (user) {
-          const userUpdater = {
-            weeklyScore: user?.weeklyScore + score,
-            golds: user.golds
-              ? Math.round(user.golds + score / 2)
-              : Math.round(score / 2),
+          let userUpdater: any = {
             hearts,
           };
+
+          if (playStatus === ERoundPlayStatus.DONE) {
+            userUpdater = {
+              ...userUpdater,
+              weeklyScore: user.weeklyScore
+                ? user.weeklyScore + parseInt(score)
+                : parseInt(score),
+              golds: user.golds
+                ? Math.round(user.golds + score / 2)
+                : Math.round(score / 2),
+            };
+          }
           const userUpdate = UserSchema.findByIdAndUpdate(userId, userUpdater);
 
           if (!existCourseInDiary) {
@@ -47,6 +70,7 @@ export async function updateDiary(req: Request, res: Response) {
                         {
                           roundId,
                           score,
+                          playStatus,
                         },
                       ],
                     },
@@ -68,7 +92,8 @@ export async function updateDiary(req: Request, res: Response) {
 
               if (currentCourse.course.toString() == courseId.toString()) {
                 const existLessionInCourseDiary = currentCourse.lessions.find(
-                  (lession) => lession.lession.toString() == lessionId
+                  (lession) =>
+                    lession.lession.toString() == lessionId.toString()
                 );
 
                 if (!existLessionInCourseDiary) {
@@ -81,7 +106,7 @@ export async function updateDiary(req: Request, res: Response) {
                       )?.rounds.length === 1
                         ? true
                         : false,
-                    rounds: [{ roundId, score }],
+                    rounds: [{ roundId, score, playStatus }],
                   });
                 } else {
                   for (let j = 0; j < currentCourse.lessions.length; ++j) {
@@ -90,7 +115,30 @@ export async function updateDiary(req: Request, res: Response) {
                     if (
                       currentLession.lession.toString() == lessionId.toString()
                     ) {
-                      currentLession.rounds.push({ roundId, score });
+                      let existRoundInDiary = currentLession.rounds.find(
+                        (round) => round.roundId === roundId
+                      );
+
+                      if (!existRoundInDiary)
+                        currentLession.rounds.push({
+                          roundId,
+                          score,
+                          playStatus,
+                        });
+                      else {
+                        const newRounds = currentLession.rounds.map((round) => {
+                          if (round.roundId === roundId)
+                            round = {
+                              ...round,
+                              score,
+                              playStatus,
+                            };
+
+                          return round;
+                        });
+
+                        currentLession.rounds = newRounds;
+                      }
                     }
 
                     const lessionInExistCourse = existCourse.lessions.find(
@@ -101,8 +149,9 @@ export async function updateDiary(req: Request, res: Response) {
 
                     if (
                       lessionInExistCourse &&
-                      currentLession.rounds.length >=
-                        lessionInExistCourse.rounds.length
+                      currentLession.rounds.filter(
+                        (round) => round.playStatus === ERoundPlayStatus.DONE
+                      ).length >= lessionInExistCourse.rounds.length
                     )
                       currentLession.isCompleted = true;
                   }

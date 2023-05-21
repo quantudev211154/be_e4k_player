@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { HelperUtil } from "../utils";
 import { APIMessage } from "../constants";
-import { CourseSchema, DiarySchema } from "../models";
+import { CourseSchema, DiarySchema, ERoundPlayStatus } from "../models";
 
 export async function getAllLessionByCourseId(req: Request, res: Response) {
   try {
@@ -55,23 +55,20 @@ export async function getAllLessionByCourseId(req: Request, res: Response) {
                   (round) => round.roundId === currentLession.rounds[j].roundId
                 );
 
-                if (isPlayed) {
-                  newRounds.push({
-                    ...currentLession.rounds[j],
-                    isPlayed: true,
-                  });
-                } else {
-                  newRounds.push({
-                    ...currentLession.rounds[j],
-                    isPlayed: false,
-                  });
-                }
+                newRounds.push({
+                  ...currentLession.rounds[j],
+                  playStatus: isPlayed
+                    ? isPlayed.playStatus
+                    : ERoundPlayStatus.NONE,
+                });
               }
 
               currentLession = {
                 ...currentLession,
                 rounds: newRounds,
-                playedRounds: lessionInDiary.rounds.length,
+                playedRounds: lessionInDiary.rounds.filter(
+                  (round) => round.playStatus === ERoundPlayStatus.DONE
+                ).length,
               };
             } else {
               currentLession = {

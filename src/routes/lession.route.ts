@@ -65,6 +65,9 @@ const router = express.Router();
  *                                    score:
  *                                        type: integer
  *                                        example: 10
+ *                                    playStatus:
+ *                                        type: string
+ *                                        example: DONE (DONE | FAILED | NONE)
  *       500:
  *         description: Missing phone | login for invalid purpose (such as phone was registered as Admin right, but login as player)
  */

@@ -62,9 +62,6 @@ const router = express.Router();
  *                              weeklyScore:
  *                                  type: integer
  *                                  example: 0
- *                              level:
- *                                  type: integer
- *                                  example: 0
  *                              role:
  *                                  type: string
  *                                  example: PLAYER

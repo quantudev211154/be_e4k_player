@@ -2,6 +2,12 @@ import mongoose, { ObjectId, Schema } from "mongoose";
 import { IUser } from "./user.model";
 import { ICourse } from "./course.model";
 
+export enum ERoundPlayStatus {
+  DONE = "DONE",
+  FAILED = "FAILED",
+  NONE = "NONE",
+}
+
 const diarySchema = new Schema(
   {
     user: {
@@ -42,6 +48,11 @@ const diarySchema = new Schema(
                   require: false,
                   default: Date.now(),
                 },
+                playStatus: {
+                  type: String,
+                  require: true,
+                  enum: ERoundPlayStatus,
+                },
               },
             ],
             isCompleted: {
@@ -66,6 +77,7 @@ export interface IDiaryLessionRound {
   _id?: ObjectId;
   roundId: string;
   score: number;
+  playStatus: ERoundPlayStatus;
   playedAt?: Date;
 }
 

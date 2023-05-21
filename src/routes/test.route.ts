@@ -13,7 +13,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /user?userLevel={userLevel}:
+ * /test?userLevel={userLevel}:
  *   get:
  *     summary: Get get exam for user (1 exam contains 15 test)
  *     tags: [test]

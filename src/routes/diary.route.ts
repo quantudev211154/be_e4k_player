@@ -49,6 +49,10 @@ const router = express.Router();
  *                 type: number
  *                 description: The remain hearts of player
  *                 example: 3
+ *               playStatus:
+ *                 type: string
+ *                 description: Play status of round (DONE | FAILED)
+ *                 example: DONE
  *     responses:
  *       200:
  *         description: Diary of user
@@ -118,6 +122,9 @@ const router = express.Router();
  *                                                                  playedAt:
  *                                                                      type: Date
  *                                                                      example: 2023-05-11T21:16:27.108Z
+ *                                                                  playStatus:
+ *                                                                      type: string
+ *                                                                      example: DONE (DONE | FAILED)
  *       500:
  *         description: Missing phone | login for invalid purpose (such as phone was registered as Admin right, but login as player)
  */

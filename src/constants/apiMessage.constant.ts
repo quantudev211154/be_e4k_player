@@ -40,6 +40,6 @@ export const ERR_NO_LESSION_FOUND = "No lession found";
 
 export const ERR_NO_USER_FOUND = "No user found";
 
-export const ERR_UNEXPECTED = "Un expected error";
+export const ERR_UNEXPECTED = "Unexpected error";
 
 export const ERR_OLD_PASSWORD_INCORRECT = "Old password is incorrect";
