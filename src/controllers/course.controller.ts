@@ -20,7 +20,7 @@ export async function getAllCourse(req: Request, res: Response) {
         "-updatedAt",
         "-type",
       ])
-      .sort({ position: -1 });
+      .sort({ position: 1 });
 
     courses = [...foundCourses];
 
