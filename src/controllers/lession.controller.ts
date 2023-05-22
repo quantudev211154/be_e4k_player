@@ -23,17 +23,17 @@ export async function getAllLessionByCourseId(req: Request, res: Response) {
     if (course) {
       const lessions: any = [];
 
+      const diaryFilter = {
+        user: userId,
+      };
+      const diary = await DiarySchema.findOne(diaryFilter);
+
       for (let i = 0; i < course.lessions.length; ++i) {
         let currentLession = course.lessions[i] as any;
         currentLession = {
           ...currentLession._doc,
           totalRounds: currentLession.rounds.length,
         };
-
-        const diaryFilter = {
-          user: userId,
-        };
-        const diary = await DiarySchema.findOne(diaryFilter);
 
         if (diary) {
           const courseInDiary = diary.courses.find(
@@ -71,16 +71,32 @@ export async function getAllLessionByCourseId(req: Request, res: Response) {
                 ).length,
               };
             } else {
+              const newRounds = [];
+
+              for (let i = 0; i < currentLession.rounds.length; ++i) {
+                currentLession.rounds[i].playStatus = ERoundPlayStatus.NONE;
+                newRounds.push(currentLession.rounds[i]);
+              }
+
               currentLession = {
                 ...currentLession,
                 playedRounds: 0,
+                rounds: newRounds,
               };
             }
           }
         } else {
+          const newRounds = [];
+
+          for (let i = 0; i < currentLession.rounds.length; ++i) {
+            currentLession.rounds[i].playStatus = ERoundPlayStatus.NONE;
+            newRounds.push(currentLession.rounds[i]);
+          }
+
           currentLession = {
             ...currentLession,
             playedRounds: 0,
+            rounds: newRounds,
           };
         }
 

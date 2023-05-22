@@ -29,13 +29,13 @@ function getAllLessionByCourseId(req, res) {
                 utils_1.HelperUtil.returnErrorResult(res, constants_1.APIMessage.ERR_NO_COURSE_FOUND);
             if (course) {
                 const lessions = [];
+                const diaryFilter = {
+                    user: userId,
+                };
+                const diary = yield models_1.DiarySchema.findOne(diaryFilter);
                 for (let i = 0; i < course.lessions.length; ++i) {
                     let currentLession = course.lessions[i];
                     currentLession = Object.assign(Object.assign({}, currentLession._doc), { totalRounds: currentLession.rounds.length });
-                    const diaryFilter = {
-                        user: userId,
-                    };
-                    const diary = yield models_1.DiarySchema.findOne(diaryFilter);
                     if (diary) {
                         const courseInDiary = diary.courses.find((course) => course.course.toString() == courseId.toString());
                         if (courseInDiary) {
@@ -52,12 +52,22 @@ function getAllLessionByCourseId(req, res) {
                                 currentLession = Object.assign(Object.assign({}, currentLession), { rounds: newRounds, playedRounds: lessionInDiary.rounds.filter((round) => round.playStatus === models_1.ERoundPlayStatus.DONE).length });
                             }
                             else {
-                                currentLession = Object.assign(Object.assign({}, currentLession), { playedRounds: 0 });
+                                const newRounds = [];
+                                for (let i = 0; i < currentLession.rounds.length; ++i) {
+                                    currentLession.rounds[i].playStatus = models_1.ERoundPlayStatus.NONE;
+                                    newRounds.push(currentLession.rounds[i]);
+                                }
+                                currentLession = Object.assign(Object.assign({}, currentLession), { playedRounds: 0, rounds: newRounds });
                             }
                         }
                     }
                     else {
-                        currentLession = Object.assign(Object.assign({}, currentLession), { playedRounds: 0 });
+                        const newRounds = [];
+                        for (let i = 0; i < currentLession.rounds.length; ++i) {
+                            currentLession.rounds[i].playStatus = models_1.ERoundPlayStatus.NONE;
+                            newRounds.push(currentLession.rounds[i]);
+                        }
+                        currentLession = Object.assign(Object.assign({}, currentLession), { playedRounds: 0, rounds: newRounds });
                     }
                     lessions.push(currentLession);
                 }
