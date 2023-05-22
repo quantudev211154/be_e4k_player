@@ -30,7 +30,7 @@ function getAllCourse(req, res) {
                 "-updatedAt",
                 "-type",
             ])
-                .sort({ position: -1 });
+                .sort({ position: 1 });
             courses = [...foundCourses];
             for (let i = 0; i < courses.length; ++i) {
                 const diary = yield models_1.DiarySchema.findOne({ user: userId });
