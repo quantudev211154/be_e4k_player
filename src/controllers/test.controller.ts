@@ -6,11 +6,7 @@ import { TEST_PER_EXAM } from "../constants";
 
 export async function getAnExam(req: Request, res: Response) {
   try {
-    const userLevel = req.query.userLevel;
-
     const testFilter = {
-      level:
-        userLevel === EUserLevel.NEWBIE ? ETestLevel.EASY : ETestLevel.MEDIUM,
       isDeleted: false,
     };
     const tests = await TestSchema.find(testFilter).select([
@@ -25,17 +21,15 @@ export async function getAnExam(req: Request, res: Response) {
 
     let exam: ITest[] = [];
 
-    if (tests.length > TEST_PER_EXAM) {
-      while (exam.length <= TEST_PER_EXAM) {
-        let randomTest = tests[Math.floor(Math.random() * tests.length)];
+    while (exam.length < TEST_PER_EXAM) {
+      let randomTest = tests[Math.floor(Math.random() * tests.length)];
 
-        const existTestInExam = exam.find(
-          (item) => item._id.toString() == randomTest._id.toString()
-        );
+      const existTestInExam = exam.find(
+        (item) => item._id.toString() == randomTest._id.toString()
+      );
 
-        if (!existTestInExam) exam.push(randomTest);
-      }
-    } else exam = tests;
+      if (!existTestInExam) exam.push(randomTest);
+    }
 
     return HelperUtil.returnSuccessfulResult(res, { exam });
   } catch (error) {

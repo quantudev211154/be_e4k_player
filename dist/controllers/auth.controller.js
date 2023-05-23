@@ -48,8 +48,8 @@ exports.login = login;
 function register(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { phone, username, password, level } = req.body;
-            if (!phone || !username || !password || !level)
+            const { phone, username, password } = req.body;
+            if (!phone || !username || !password)
                 return utils_1.HelperUtil.returnErrorResult(res, constants_1.APIMessage.ERR_MISSING_PARAMS);
             const existPlayer = yield models_1.UserSchema.findOne({ phone });
             if (existPlayer)
@@ -60,7 +60,6 @@ function register(req, res) {
                 username,
                 hearts: 5,
                 golds: 500,
-                level,
                 password: hashedPassword,
             }).save();
             const accessToken = utils_1.AuthUtil.createToken("accessToken", newPlayer);
