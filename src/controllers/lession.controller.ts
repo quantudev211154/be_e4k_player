@@ -18,72 +18,70 @@ export async function getAllLessionByCourseId(req: Request, res: Response) {
     ]);
 
     if (!course)
-      HelperUtil.returnErrorResult(res, APIMessage.ERR_NO_COURSE_FOUND);
+      return HelperUtil.returnErrorResult(res, APIMessage.ERR_NO_COURSE_FOUND);
 
-    if (course) {
-      const lessions: any = [];
+    const lessions: any = [];
 
-      const diaryFilter = {
-        user: userId,
+    const diaryFilter = {
+      user: userId,
+    };
+    const diary = await DiarySchema.findOne(diaryFilter);
+
+    for (let i = 0; i < course.lessions.length; ++i) {
+      let currentLession = course.lessions[i] as any;
+      currentLession = {
+        ...currentLession._doc,
+        totalRounds: currentLession.rounds.length,
       };
-      const diary = await DiarySchema.findOne(diaryFilter);
 
-      for (let i = 0; i < course.lessions.length; ++i) {
-        let currentLession = course.lessions[i] as any;
-        currentLession = {
-          ...currentLession._doc,
-          totalRounds: currentLession.rounds.length,
-        };
+      if (diary) {
+        const courseInDiary = diary.courses.find(
+          (course) => course.course.toString() == courseId.toString()
+        );
 
-        if (diary) {
-          const courseInDiary = diary.courses.find(
-            (course) => course.course.toString() == courseId.toString()
+        if (courseInDiary) {
+          const lessionInDiary = courseInDiary.lessions.find(
+            (lession) =>
+              lession.lession.toString() == currentLession._id.toString()
           );
 
-          if (courseInDiary) {
-            const lessionInDiary = courseInDiary.lessions.find(
-              (lession) =>
-                lession.lession.toString() == currentLession._id.toString()
-            );
+          if (lessionInDiary) {
+            const roundsInDiary = lessionInDiary.rounds;
+            const newRounds = [];
 
-            if (lessionInDiary) {
-              const roundsInDiary = lessionInDiary.rounds;
-              const newRounds = [];
+            for (let j = 0; j < currentLession.rounds.length; ++j) {
+              const isPlayed = roundsInDiary.find(
+                (round) => round.roundId === currentLession.rounds[j].roundId
+              );
 
-              for (let j = 0; j < currentLession.rounds.length; ++j) {
-                const isPlayed = roundsInDiary.find(
-                  (round) => round.roundId === currentLession.rounds[j].roundId
-                );
-
-                newRounds.push({
-                  ...currentLession.rounds[j],
-                  playStatus: isPlayed
-                    ? isPlayed.playStatus
-                    : ERoundPlayStatus.NONE,
-                });
-              }
-
-              currentLession = {
-                ...currentLession,
-                rounds: newRounds,
-                playedRounds: lessionInDiary.rounds.filter(
-                  (round) => round.playStatus === ERoundPlayStatus.DONE
-                ).length,
-              };
-            } else {
-              const newRounds = [];
-
-              for (let i = 0; i < currentLession.rounds.length; ++i) {
-                currentLession.rounds[i].playStatus = ERoundPlayStatus.NONE;
-                newRounds.push(currentLession.rounds[i]);
-              }
-
-              currentLession = {
-                ...currentLession,
-                playedRounds: 0,
-                rounds: newRounds,
-              };
+              newRounds.push({
+                ...currentLession.rounds[j],
+                playStatus: isPlayed
+                  ? isPlayed.playStatus
+                  : ERoundPlayStatus.NONE,
+              });
             }
+
+            currentLession = {
+              ...currentLession,
+              rounds: newRounds,
+              playedRounds: lessionInDiary.rounds.filter(
+                (round) => round.playStatus === ERoundPlayStatus.DONE
+              ).length,
+            };
+          } else {
+            const newRounds = [];
+
+            for (let i = 0; i < currentLession.rounds.length; ++i) {
+              currentLession.rounds[i].playStatus = ERoundPlayStatus.NONE;
+              newRounds.push(currentLession.rounds[i]);
+            }
+
+            currentLession = {
+              ...currentLession,
+              playedRounds: 0,
+              rounds: newRounds,
+            };
           }
         } else {
           const newRounds = [];
@@ -99,12 +97,25 @@ export async function getAllLessionByCourseId(req: Request, res: Response) {
             rounds: newRounds,
           };
         }
+      } else {
+        const newRounds = [];
 
-        lessions.push(currentLession);
+        for (let i = 0; i < currentLession.rounds.length; ++i) {
+          currentLession.rounds[i].playStatus = ERoundPlayStatus.NONE;
+          newRounds.push(currentLession.rounds[i]);
+        }
+
+        currentLession = {
+          ...currentLession,
+          playedRounds: 0,
+          rounds: newRounds,
+        };
       }
 
-      return HelperUtil.returnSuccessfulResult(res, { lession: lessions });
+      lessions.push(currentLession);
     }
+
+    return HelperUtil.returnSuccessfulResult(res, { lession: lessions });
   } catch (error: any) {
     return HelperUtil.returnErrorResult(res, error);
   }

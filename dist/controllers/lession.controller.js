@@ -26,39 +26,37 @@ function getAllLessionByCourseId(req, res) {
                 "-lessions.creator",
             ]);
             if (!course)
-                utils_1.HelperUtil.returnErrorResult(res, constants_1.APIMessage.ERR_NO_COURSE_FOUND);
-            if (course) {
-                const lessions = [];
-                const diaryFilter = {
-                    user: userId,
-                };
-                const diary = yield models_1.DiarySchema.findOne(diaryFilter);
-                for (let i = 0; i < course.lessions.length; ++i) {
-                    let currentLession = course.lessions[i];
-                    currentLession = Object.assign(Object.assign({}, currentLession._doc), { totalRounds: currentLession.rounds.length });
-                    if (diary) {
-                        const courseInDiary = diary.courses.find((course) => course.course.toString() == courseId.toString());
-                        if (courseInDiary) {
-                            const lessionInDiary = courseInDiary.lessions.find((lession) => lession.lession.toString() == currentLession._id.toString());
-                            if (lessionInDiary) {
-                                const roundsInDiary = lessionInDiary.rounds;
-                                const newRounds = [];
-                                for (let j = 0; j < currentLession.rounds.length; ++j) {
-                                    const isPlayed = roundsInDiary.find((round) => round.roundId === currentLession.rounds[j].roundId);
-                                    newRounds.push(Object.assign(Object.assign({}, currentLession.rounds[j]), { playStatus: isPlayed
-                                            ? isPlayed.playStatus
-                                            : models_1.ERoundPlayStatus.NONE }));
-                                }
-                                currentLession = Object.assign(Object.assign({}, currentLession), { rounds: newRounds, playedRounds: lessionInDiary.rounds.filter((round) => round.playStatus === models_1.ERoundPlayStatus.DONE).length });
+                return utils_1.HelperUtil.returnErrorResult(res, constants_1.APIMessage.ERR_NO_COURSE_FOUND);
+            const lessions = [];
+            const diaryFilter = {
+                user: userId,
+            };
+            const diary = yield models_1.DiarySchema.findOne(diaryFilter);
+            for (let i = 0; i < course.lessions.length; ++i) {
+                let currentLession = course.lessions[i];
+                currentLession = Object.assign(Object.assign({}, currentLession._doc), { totalRounds: currentLession.rounds.length });
+                if (diary) {
+                    const courseInDiary = diary.courses.find((course) => course.course.toString() == courseId.toString());
+                    if (courseInDiary) {
+                        const lessionInDiary = courseInDiary.lessions.find((lession) => lession.lession.toString() == currentLession._id.toString());
+                        if (lessionInDiary) {
+                            const roundsInDiary = lessionInDiary.rounds;
+                            const newRounds = [];
+                            for (let j = 0; j < currentLession.rounds.length; ++j) {
+                                const isPlayed = roundsInDiary.find((round) => round.roundId === currentLession.rounds[j].roundId);
+                                newRounds.push(Object.assign(Object.assign({}, currentLession.rounds[j]), { playStatus: isPlayed
+                                        ? isPlayed.playStatus
+                                        : models_1.ERoundPlayStatus.NONE }));
                             }
-                            else {
-                                const newRounds = [];
-                                for (let i = 0; i < currentLession.rounds.length; ++i) {
-                                    currentLession.rounds[i].playStatus = models_1.ERoundPlayStatus.NONE;
-                                    newRounds.push(currentLession.rounds[i]);
-                                }
-                                currentLession = Object.assign(Object.assign({}, currentLession), { playedRounds: 0, rounds: newRounds });
+                            currentLession = Object.assign(Object.assign({}, currentLession), { rounds: newRounds, playedRounds: lessionInDiary.rounds.filter((round) => round.playStatus === models_1.ERoundPlayStatus.DONE).length });
+                        }
+                        else {
+                            const newRounds = [];
+                            for (let i = 0; i < currentLession.rounds.length; ++i) {
+                                currentLession.rounds[i].playStatus = models_1.ERoundPlayStatus.NONE;
+                                newRounds.push(currentLession.rounds[i]);
                             }
+                            currentLession = Object.assign(Object.assign({}, currentLession), { playedRounds: 0, rounds: newRounds });
                         }
                     }
                     else {
@@ -69,10 +67,18 @@ function getAllLessionByCourseId(req, res) {
                         }
                         currentLession = Object.assign(Object.assign({}, currentLession), { playedRounds: 0, rounds: newRounds });
                     }
-                    lessions.push(currentLession);
                 }
-                return utils_1.HelperUtil.returnSuccessfulResult(res, { lession: lessions });
+                else {
+                    const newRounds = [];
+                    for (let i = 0; i < currentLession.rounds.length; ++i) {
+                        currentLession.rounds[i].playStatus = models_1.ERoundPlayStatus.NONE;
+                        newRounds.push(currentLession.rounds[i]);
+                    }
+                    currentLession = Object.assign(Object.assign({}, currentLession), { playedRounds: 0, rounds: newRounds });
+                }
+                lessions.push(currentLession);
             }
+            return utils_1.HelperUtil.returnSuccessfulResult(res, { lession: lessions });
         }
         catch (error) {
             return utils_1.HelperUtil.returnErrorResult(res, error);

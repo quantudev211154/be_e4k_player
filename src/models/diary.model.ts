@@ -89,7 +89,7 @@ export interface IDiaryLession {
 }
 
 export interface IDiaryCourse {
-  _id: ObjectId;
+  _id?: ObjectId;
   course: ICourse | string;
   isCompleted: boolean;
   lessions: IDiaryLession[];

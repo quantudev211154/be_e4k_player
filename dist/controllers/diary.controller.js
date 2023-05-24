@@ -36,7 +36,7 @@ function updateDiary(req, res) {
                 models_1.DiarySchema.findOne(existCourseInDiaryFilter),
             ])
                 .then(([user, existCourseInDiary]) => __awaiter(this, void 0, void 0, function* () {
-                var _a;
+                var _a, _b;
                 if (user) {
                     let userUpdater = {
                         hearts,
@@ -77,51 +77,75 @@ function updateDiary(req, res) {
                         });
                     }
                     else {
-                        for (let i = 0; i < existCourseInDiary.courses.length; ++i) {
-                            const currentCourse = existCourseInDiary.courses[i];
-                            if (currentCourse.course.toString() == courseId.toString()) {
-                                const existLessionInCourseDiary = currentCourse.lessions.find((lession) => lession.lession.toString() == lessionId.toString());
-                                if (!existLessionInCourseDiary) {
-                                    currentCourse.lessions.push({
+                        const isExistCourse = existCourseInDiary.courses.find((course) => course.course.toString() == courseId.toString());
+                        if (!isExistCourse) {
+                            const newCourse = {
+                                course: courseId,
+                                isCompleted: existCourse.lessions.length === 1,
+                                lessions: [
+                                    {
                                         lession: lessionId,
-                                        isCompleted: ((_a = existCourse.lessions.find((lession) => lession._id.toString() == lessionId.toString())) === null || _a === void 0 ? void 0 : _a.rounds.length) === 1
-                                            ? true
-                                            : false,
-                                        rounds: [{ roundId, score, playStatus }],
-                                    });
-                                }
-                                else {
-                                    for (let j = 0; j < currentCourse.lessions.length; ++j) {
-                                        const currentLession = currentCourse.lessions[j];
-                                        if (currentLession.lession.toString() == lessionId.toString()) {
-                                            let existRoundInDiary = currentLession.rounds.find((round) => round.roundId === roundId);
-                                            if (!existRoundInDiary)
-                                                currentLession.rounds.push({
-                                                    roundId,
-                                                    score,
-                                                    playStatus,
-                                                });
-                                            else {
-                                                const newRounds = currentLession.rounds.map((round) => {
-                                                    if (round.roundId === roundId)
-                                                        round = Object.assign(Object.assign({}, round), { score,
-                                                            playStatus });
-                                                    return round;
-                                                });
-                                                currentLession.rounds = newRounds;
+                                        isCompleted: ((_a = existCourse.lessions.find((lession) => lession._id.toString() == lessionId.toString())) === null || _a === void 0 ? void 0 : _a.rounds.length) === 1,
+                                        rounds: [
+                                            {
+                                                roundId,
+                                                playStatus,
+                                                score,
+                                            },
+                                        ],
+                                    },
+                                ],
+                            };
+                            existCourseInDiary.courses.push(newCourse);
+                        }
+                        else {
+                            for (let i = 0; i < existCourseInDiary.courses.length; ++i) {
+                                const currentCourse = existCourseInDiary.courses[i];
+                                if (currentCourse.course.toString() == courseId.toString()) {
+                                    const existLessionInCourseDiary = currentCourse.lessions.find((lession) => lession.lession.toString() == lessionId.toString());
+                                    if (!existLessionInCourseDiary) {
+                                        currentCourse.lessions.push({
+                                            lession: lessionId,
+                                            isCompleted: ((_b = existCourse.lessions.find((lession) => lession._id.toString() == lessionId.toString())) === null || _b === void 0 ? void 0 : _b.rounds.length) === 1
+                                                ? true
+                                                : false,
+                                            rounds: [{ roundId, score, playStatus }],
+                                        });
+                                    }
+                                    else {
+                                        for (let j = 0; j < currentCourse.lessions.length; ++j) {
+                                            const currentLession = currentCourse.lessions[j];
+                                            if (currentLession.lession.toString() ==
+                                                lessionId.toString()) {
+                                                let existRoundInDiary = currentLession.rounds.find((round) => round.roundId === roundId);
+                                                if (!existRoundInDiary)
+                                                    currentLession.rounds.push({
+                                                        roundId,
+                                                        score,
+                                                        playStatus,
+                                                    });
+                                                else {
+                                                    const newRounds = currentLession.rounds.map((round) => {
+                                                        if (round.roundId === roundId)
+                                                            round = Object.assign(Object.assign({}, round), { score,
+                                                                playStatus });
+                                                        return round;
+                                                    });
+                                                    currentLession.rounds = newRounds;
+                                                }
                                             }
+                                            const lessionInExistCourse = existCourse.lessions.find((lession) => lession._id.toString() ==
+                                                currentLession.lession.toString());
+                                            if (lessionInExistCourse &&
+                                                currentLession.rounds.filter((round) => round.playStatus === models_1.ERoundPlayStatus.DONE).length >= lessionInExistCourse.rounds.length)
+                                                currentLession.isCompleted = true;
                                         }
-                                        const lessionInExistCourse = existCourse.lessions.find((lession) => lession._id.toString() ==
-                                            currentLession.lession.toString());
-                                        if (lessionInExistCourse &&
-                                            currentLession.rounds.filter((round) => round.playStatus === models_1.ERoundPlayStatus.DONE).length >= lessionInExistCourse.rounds.length)
-                                            currentLession.isCompleted = true;
                                     }
                                 }
+                                const completedCourseInDiary = currentCourse.lessions.filter((lession) => lession.isCompleted);
+                                if (completedCourseInDiary.length >= currentCourse.lessions.length)
+                                    currentCourse.isCompleted = true;
                             }
-                            const completedCourseInDiary = currentCourse.lessions.filter((lession) => lession.isCompleted);
-                            if (completedCourseInDiary.length >= currentCourse.lessions.length)
-                                currentCourse.isCompleted = true;
                         }
                         Promise.all([userUpdate, existCourseInDiary.save()]).then(([userUpdated, updatedCourseInDiary]) => {
                             return utils_1.HelperUtil.returnSuccessfulResult(res, {
